@@ -8,7 +8,7 @@ import Routes from "./src/routes/stack.routs";
 
 export default function App() {
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider >
       <NavigationContainer>
         <Routes />
       </NavigationContainer>
@@ -16,11 +16,13 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+// const styles = StyleSheet.create({
+//   borderAPP: {
+//     flex: 1,
+//     backgroundColor: "lightgray",
+//     borderRadius: 20,
+//     borderWidth: 10,
+//     borderColor: "black",
+//     borderStyle: "solid",
+//   },
+// });
