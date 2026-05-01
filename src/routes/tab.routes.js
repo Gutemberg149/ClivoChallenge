@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../screens/Home";
 import Login from "../screens/Login";
-// import Animal from "../screens/Animal";
 import { Feather } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
@@ -12,6 +11,7 @@ export default function TabRoutes() {
       <Tab.Screen name="home" component={Home} options={{ tabBarIcon: () => <Feather name="home" color="green" size={30} />, tabBarLabel: "Inicio" }} />
 
       <Tab.Screen name="login" component={Login} options={{ tabBarIcon: () => <Feather name="login" color="green" size={30} /> }} />
+
     </Tab.Navigator>
   );
 }

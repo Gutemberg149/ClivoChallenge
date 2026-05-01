@@ -7,7 +7,7 @@ const Stack = createNativeStackNavigator();
 export default function Routes() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="main" component={TabRoutes} /> 
+      <Stack.Screen name="home" component={TabRoutes} /> 
       <Stack.Screen name="animal" component={Animal} />
     </Stack.Navigator>
   );

@@ -1,0 +1,25 @@
+{
+    "categorias": [
+      {
+        "id": 1,
+        "nome": "Pets",
+        "icone": "🐶",
+        "cor": "#4CAF50",
+        "rota": "animal"
+      },
+      {
+        "id": 2,
+        "nome": "Agropecuário",
+        "icone": "🐄",
+        "cor": "#FF9800",
+        "rota": "animal"
+      },
+      {
+        "id": 3,
+        "nome": "Pássaros",
+        "icone": "🐦",
+        "cor": "#2196F3",
+        "rota": "animal"
+      }
+    ]
+  }
