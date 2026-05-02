@@ -4,6 +4,14 @@ import categorias from "../../dados/categorias.json";
 import subcategoriasData from "../../dados/subcategorias.json";
 
 import doggy from "../../assets/subcategoriaIMG/doggy.png";
+import gato from "../../assets/subcategoriaIMG/gato.png";
+import peixe from "../../assets/subcategoriaIMG/peixe.png";
+import vaca from "../../assets/subcategoriaIMG/vaca.png";
+import equino from "../../assets/subcategoriaIMG/equino.png";
+import galinha from "../../assets/subcategoriaIMG/galinha.png";
+import papagaio from "../../assets/subcategoriaIMG/papagaio.png";
+import canario from "../../assets/subcategoriaIMG/canario.png";
+import calopsita from "../../assets/subcategoriaIMG/calopsita.png";
 
 const dogIcon = require("../../assets/PNG_ICons/dog.png");
 const bullIcon = require("../../assets/PNG_ICons/bull.png");
@@ -31,21 +39,21 @@ export default function Home({ navigation }) {
       case "101":
         return doggy;
       case "102":
-        return bullIcon;
+        return gato;
       case "103":
-        return pigeonIcon;
+        return peixe;
       case "104":
-        return pigeonIcon;
+        return vaca;
       case "105":
-        return pigeonIcon;
+        return equino;
       case "106":
-        return pigeonIcon;
+        return galinha;
       case "107":
-        return pigeonIcon;
+        return papagaio;
       case "108":
-        return pigeonIcon;
+        return canario;
       case "109":
-        return pigeonIcon;
+        return calopsita;
       default:
         return dogIcon;
     }
@@ -76,14 +84,19 @@ export default function Home({ navigation }) {
   }, []);
 
   const renderSubcategoryItem = ({ item }) => (
-    <TouchableOpacity style={styles.subcategoryBox} onPress={() => navigation.navigate(item.rota, { subcategory: item })} activeOpacity={0.7}>
+    <TouchableOpacity
+      style={styles.subcategoryBox}
+      // Mude de item.rota para "animal", e passe o objeto item
+      onPress={() => navigation.navigate("animal", { subcategory: item })}
+      activeOpacity={0.7}
+    >
       <View style={styles.subcategoryCircle}>
-        <Image source={require(`../../assets/PNG_ICons/dog.png`)} style={styles.subcategoryImage} resizeMode="contain" />
+        {/* Sua lógica de imagem que já funciona */}
+        <Image source={getImagensubcategoria(item.id.toString())} style={styles.subcategoryImage} resizeMode="contain" />
       </View>
       <Text style={styles.subcategoryNome}>{item.nome}</Text>
     </TouchableOpacity>
   );
-
   return (
     <>
       <View style={styles.bannerContainer}>
@@ -97,7 +110,13 @@ export default function Home({ navigation }) {
           <View style={styles.categoriasContainerCategoria}>
             {categorias.categorias.map((categoria) => (
               <TouchableOpacity key={categoria.id} style={styles.box} activeOpacity={0.7} onPress={() => handleCategoryPress(categoria.nome)}>
-                <View style={[styles.circle, selectedCategory === categoria.nome && styles.selectedCircle]}>
+                {/* ADICIONE O ESTILO CONDICIONAL AQUI */}
+                <View
+                  style={[
+                    styles.circle,
+                    selectedCategory === categoria.nome && { backgroundColor: "#FFE4B5" }, // Laranja claro (Moccasin)
+                  ]}
+                >
                   <Image source={getIcon(categoria.nome)} style={styles.imagem} resizeMode="contain" />
                 </View>
                 <Text style={styles.categoriaNome}>{categoria.nome}</Text>
@@ -119,19 +138,12 @@ export default function Home({ navigation }) {
             </View>
           )}
         </View>
-        <View>
-          <Image source={require("../../assets/subcategoriaIMG/doggy.png")} style={styles.dog} />
-        </View>
       </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  dog: {
-    width: 260,
-    height: 280,
-  },
   scrollContainer: {
     flex: 1,
     backgroundColor: "#c6eadd",
@@ -182,7 +194,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#79bca6",
+    borderColor: "black",
     marginBottom: 8,
   },
   selectedCircle: {
