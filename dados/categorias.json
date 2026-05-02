@@ -4,22 +4,22 @@
       "id": 1,
       "nome": "Pets",
       "iconePath": "../../assets/PNG_ICons/dog.png",
-      "cor": "#4CAF50",
-      "rota": "animal"
+      "cor": "#4CAF50"
+     
     },
     {
       "id": 2,
       "nome": "Agro",
       "iconePath": "../../assets/PNG_ICons/bull.png",
-      "cor": "#FF9800",
-      "rota": "animal"
+      "cor": "#FF9800"
+     
     },
     {
       "id": 3,
       "nome": "Pássaros",
       "iconePath": "../../assets/PNG_ICons/pigeon.png",
-      "cor": "#2196F3",
-      "rota": "animal"
+      "cor": "#2196F3"
+     
     }
   ]
 }

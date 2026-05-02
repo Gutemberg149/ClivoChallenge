@@ -8,21 +8,16 @@ import Routes from "./src/routes/stack.routs";
 
 export default function App() {
   return (
-    <SafeAreaProvider >
-      <NavigationContainer>
+    <SafeAreaProvider style={styles.APPGlobal}>
+      <NavigationContainer >
         <Routes />
       </NavigationContainer>
     </SafeAreaProvider>
   );
 }
 
-// const styles = StyleSheet.create({
-//   borderAPP: {
-//     flex: 1,
-//     backgroundColor: "lightgray",
-//     borderRadius: 20,
-//     borderWidth: 10,
-//     borderColor: "black",
-//     borderStyle: "solid",
-//   },
-// });
+const styles = StyleSheet.create({
+  APPGlobal: {
+   backgroundColor:"white"
+  },
+});

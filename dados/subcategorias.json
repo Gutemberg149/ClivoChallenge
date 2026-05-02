@@ -1,0 +1,59 @@
+
+{
+    "subcategorias": [
+      {
+        "id": 101,
+        "nome": "Cães",
+        "iconePath": "../../assets/subcategoriaIMG/doggy.png",
+        "rota": "animal"
+      },
+      {
+        "id": 102,
+        "nome": "Gatos",
+        "iconePath": "../../assets/PNG_ICons/cat.png",
+        "rota": "animal"
+      },
+      {
+        "id": 103,
+        "nome": "Peixes Ornamentais",
+        "iconePath": "../../assets/PNG_ICons/fish.png",
+        "rota": "animal"
+      },
+      {
+        "id": 104,
+        "nome": "Vaca",
+        "iconePath": "../../assets/PNG_ICons/cow.png",
+        "rota": "animal"
+      },
+      {
+        "id": 105,
+        "nome": "Equinos",
+        "iconePath": "../../assets/PNG_ICons/horse.png",
+        "rota": "animal"
+      },
+      {
+        "id": 106,
+        "nome": "Galinha",
+        "iconePath": "../../assets/PNG_ICons/goat_sheep.png",
+        "rota": "animal"
+      },
+      {
+        "id": 107,
+        "nome": "Papagaio",
+        "iconePath": "../../assets/PNG_ICons/parrot.png",
+        "rota": "animal"
+      },
+      {
+        "id": 108,
+        "nome": "Canário",
+        "iconePath": "../../assets/PNG_ICons/canary.png",
+        "rota": "animal"
+      },
+      {
+        "id": 109,
+        "nome": "Calopsita",
+        "iconePath": "../../assets/PNG_ICons/cockatiel.png",
+        "rota": "animal"
+      }
+    ]
+  }
