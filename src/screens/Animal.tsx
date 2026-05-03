@@ -20,12 +20,12 @@ const CardPilar = ({ titulo, subtexto, icone, cor, onPress }) => (
 );
 
 export default function Animal({ route, navigation }) {
-  // Pegando os dados passados pela Home
+
   const { subcategory } = route.params;
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header com botão de voltar */}
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialCommunityIcons name="arrow-left" size={28} color="#4a8f7a" />
@@ -35,7 +35,7 @@ export default function Animal({ route, navigation }) {
       </View>
 
       <View style={styles.content}>
-        {/* PILAR 1: PREVENTIVO - Navega para a página Preventivo */}
+
         <CardPilar
           titulo="Preventivo"
           subtexto="Vacinas, Vermífugos e Check-ups"
@@ -44,7 +44,7 @@ export default function Animal({ route, navigation }) {
           onPress={() => navigation.navigate("Preventivo", { subcategory })}
         />
 
-        {/* PILAR 2: TERAPÊUTICO - Navega para a página Terapeutico */}
+  
         <CardPilar
           titulo="Terapêutico"
           subtexto="Adesão Medicamentosa"
@@ -53,7 +53,7 @@ export default function Animal({ route, navigation }) {
           onPress={() => navigation.navigate("Terapeutico", { subcategory })}
         />
 
-        {/* PILAR 3: BEM-ESTAR - Navega para a página BemEstar */}
+
         <CardPilar
           titulo="Bem-estar"
           subtexto="Nutrição e Comportamento"
@@ -62,7 +62,7 @@ export default function Animal({ route, navigation }) {
           onPress={() => navigation.navigate("BemEstar", { subcategory })}
         />
 
-        {/* PILAR 4: IA (Destaque do projeto) */}
+
         <View style={styles.aiCard}>
           <View style={styles.aiHeader}>
             <MaterialCommunityIcons name="robot" size={22} color="#fff" />

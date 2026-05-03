@@ -2,6 +2,7 @@ import { Text, StyleSheet, View, TouchableOpacity, Image, FlatList, ScrollView }
 import { useState, useEffect } from "react";
 import categorias from "../../dados/categorias.json";
 import subcategoriasData from "../../dados/subcategorias.json";
+import { LinearGradient } from "expo-linear-gradient";
 
 import doggy from "../../assets/subcategoriaIMG/doggy.png";
 import gato from "../../assets/subcategoriaIMG/gato.png";
@@ -59,11 +60,9 @@ export default function Home({ navigation }) {
     }
   };
 
-  // Function to handle category press
   const handleCategoryPress = (categoriaNome) => {
     setSelectedCategory(categoriaNome);
 
-    // Filter subcategories based on selected category
     let filteredSubcategories = [];
 
     if (categoriaNome === "Pets") {
@@ -71,52 +70,54 @@ export default function Home({ navigation }) {
     } else if (categoriaNome === "Agro") {
       filteredSubcategories = subcategoriasData.subcategorias.filter((sub) => sub.id === 104 || sub.id === 105 || sub.id === 106);
     } else if (categoriaNome === "Pássaros") {
-      // Bird subcategories
       filteredSubcategories = subcategoriasData.subcategorias.filter((sub) => sub.id === 107 || sub.id === 108 || sub.id === 109);
     }
 
     setDisplayedSubcategories(filteredSubcategories);
   };
 
-  // Load Pets category when app opens
   useEffect(() => {
     handleCategoryPress("Pets");
   }, []);
 
   const renderSubcategoryItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.subcategoryBox}
-      // Mude de item.rota para "animal", e passe o objeto item
-      onPress={() => navigation.navigate("animal", { subcategory: item })}
-      activeOpacity={0.7}
-    >
+    <TouchableOpacity style={styles.subcategoryBox} onPress={() => navigation.navigate("animal", { subcategory: item })} activeOpacity={0.7}>
       <View style={styles.subcategoryCircle}>
-        {/* Sua lógica de imagem que já funciona */}
         <Image source={getImagensubcategoria(item.id.toString())} style={styles.subcategoryImage} resizeMode="contain" />
       </View>
       <Text style={styles.subcategoryNome}>{item.nome}</Text>
     </TouchableOpacity>
   );
   return (
-    <>
-      <View style={styles.bannerContainer}>
-        <View style={styles.banner}>
-          <Text style={styles.bannerTitle}>Home</Text>
-        </View>
-      </View>
-
+    <LinearGradient
+      // Cores do gradiente (podem ser 2 ou mais)
+      colors={["#d4fc79", "#96e6a1", "#192f6a"]}
+      // Onde o gradiente começa [x, y] (0 a 1)
+      start={{ x: 0, y: 0 }}
+      // Onde o gradiente termina [x, y]
+      end={{ x: 1, y: 1 }}
+      style={styles.container}
+    >
       <ScrollView style={styles.scrollContainer}>
+        <View style={styles.headerContainer}>
+          <View style={styles.bannerTitle}>
+            <Image style={styles.logo} source={require("../../assets/logo/logo2.png")} />
+            <Text style={styles.bannerNome}>MedVet</Text>
+          </View>
+
+          <View style={styles.userInfo}>
+            <Text>
+              Olá <Text style={styles.span}>Gutemberg</Text>
+            </Text>
+            <Image style={styles.userImg} source={require("../../assets/userIMG/user.jpeg")} />
+          </View>
+        </View>
+
         <View style={styles.container}>
           <View style={styles.categoriasContainerCategoria}>
             {categorias.categorias.map((categoria) => (
               <TouchableOpacity key={categoria.id} style={styles.box} activeOpacity={0.7} onPress={() => handleCategoryPress(categoria.nome)}>
-                {/* ADICIONE O ESTILO CONDICIONAL AQUI */}
-                <View
-                  style={[
-                    styles.circle,
-                    selectedCategory === categoria.nome && { backgroundColor: "#FFE4B5" }, // Laranja claro (Moccasin)
-                  ]}
-                >
+                <View style={[styles.circle, selectedCategory === categoria.nome && { backgroundColor: "#FFE4B5" }]}>
                   <Image source={getIcon(categoria.nome)} style={styles.imagem} resizeMode="contain" />
                 </View>
                 <Text style={styles.categoriaNome}>{categoria.nome}</Text>
@@ -139,39 +140,86 @@ export default function Home({ navigation }) {
           )}
         </View>
       </ScrollView>
-    </>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
-    backgroundColor: "#c6eadd",
+    // backgroundColor: "#c6eadd",
   },
-  bannerContainer: {
-    position: "relative",
-  },
-  banner: {
+
+  headerContainer: {
+    // position: "relative",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
     width: "100%",
     height: 150,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#c6eadd",
+    backgroundColor: "white",
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 10,
+    top: 0,
   },
+
   bannerTitle: {
+    width: "50%",
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+
+  bannerNome: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#79bca6",
+    color: "black",
   },
+
+  logo: {
+    width: 60,
+    height: 60,
+  },
+
+  userInfo: {
+    width: "50%",
+    height: 60,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+   
+  },
+
+  span: {
+    fontWeight: "bold",
+    color: "black",
+    fontSize: 18,
+  },
+
+  userImg: {
+    width: 40,
+    height: 40,
+    borderRadius: 100,
+  },
+
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#c6eadd",
     paddingTop: 20,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
   },
+
   categoriasContainerCategoria: {
     flexDirection: "row",
     justifyContent: "center",
@@ -179,6 +227,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 30,
   },
+
   box: {
     width: 80,
     height: 80,
@@ -186,6 +235,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     margin: 10,
   },
+
   circle: {
     width: 90,
     height: 90,
@@ -197,6 +247,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     marginBottom: 8,
   },
+
   selectedCircle: {
     borderColor: "#4a8f7a",
     borderWidth: 3,
@@ -212,11 +263,15 @@ const styles = StyleSheet.create({
     color: "black",
     textAlign: "center",
   },
+
   subcategoriasContainer: {
     width: "100%",
+    height: "auto",
     paddingHorizontal: 20,
     marginTop: 20,
+    overflow: "visible",
   },
+
   subcategoriasTitle: {
     fontSize: 20,
     fontWeight: "bold",
@@ -224,16 +279,21 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
   },
+
   subcategoryRow: {
     justifyContent: "space-between",
     marginBottom: 15,
   },
+
   subcategoryBox: {
-    width: "48%",
+    width: "49%",
+    height: 200,
     backgroundColor: "white",
     borderRadius: 15,
-    padding: 15,
+    padding: 10,
+    flexDirection: "collum",
     alignItems: "center",
+    justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -242,24 +302,31 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
+    overflow: "visible",
   },
+
   subcategoryCircle: {
-    width: 80,
-    height: 80,
+    width: 85,
+    height: 85,
     borderRadius: 40,
     backgroundColor: "#c6eadd",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
   },
+
   subcategoryImage: {
-    width: 50,
-    height: 50,
+    width: 150,
+    height: 140,
   },
+
   subcategoryNome: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "600",
     color: "#333",
     textAlign: "center",
+    flexShrink: 1,
+    width: "100%",
+    marginTop: 20,
   },
 });
