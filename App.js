@@ -31,7 +31,6 @@ export default function App() {
   return (
     <SafeAreaProvider style={styles.APPGlobal}>
       <StatusBar style="auto" /> 
-      
       <NavigationContainer>
         <Routes />
       </NavigationContainer>
@@ -41,7 +40,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   APPGlobal: {
-    flex: 1, // IMPORTANTE: garante que o provider ocupe a tela toda
+    flex: 1, 
     backgroundColor: "white",
   },
 });

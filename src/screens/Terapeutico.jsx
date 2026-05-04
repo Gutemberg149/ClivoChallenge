@@ -4,18 +4,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function Terapeutico({ route, navigation }) {
-  const { subcategory } = route.params || {};
+  const { animal, subcategory } = route.params || {};
   const [remedio, setRemedio] = useState("");
   const [dosagem, setDosagem] = useState("");
   const [horario, setHorario] = useState("");
   const [listaMedicamentos, setListaMedicamentos] = useState([]);
   const [editando, setEditando] = useState(null);
 
-  const STORAGE_KEY = `@terapeutico_${subcategory?.id || "MEDS"}`;
+  const STORAGE_KEY = `@terapeutico_animal_${animal?.id}`;
 
   useEffect(() => {
-    buscarDados();
-  }, []);
+    if (animal?.id) buscarDados();
+  }, [animal?.id]);
 
   async function buscarDados() {
     const dados = await AsyncStorage.getItem(STORAGE_KEY);
@@ -24,7 +24,7 @@ export default function Terapeutico({ route, navigation }) {
 
   async function salvar() {
     if (!remedio || !dosagem || !horario) {
-      Alert.alert("Erro", "Preencha o remédio, a dose e o horário.");
+      Alert.alert("Erro", "Preencha todos os campos.");
       return;
     }
 
@@ -38,9 +38,7 @@ export default function Terapeutico({ route, navigation }) {
     }
 
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(meds));
-    setRemedio("");
-    setDosagem("");
-    setHorario("");
+    setRemedio(""); setDosagem(""); setHorario("");
     setEditando(null);
     buscarDados();
   }
@@ -93,7 +91,7 @@ export default function Terapeutico({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFF5F5" }, // Fundo levemente rosado/claro
+  container: { flex: 1, backgroundColor: "#FFF5F5" }, 
   header: {
     flexDirection: "row",
     justifyContent: "space-between",

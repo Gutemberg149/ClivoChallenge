@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import categorias from "../../dados/categorias.json";
 import subcategoriasData from "../../dados/subcategorias.json";
 import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import doggy from "../../assets/subcategoriaIMG/doggy.png";
 import gato from "../../assets/subcategoriaIMG/gato.png";
@@ -21,6 +22,21 @@ const pigeonIcon = require("../../assets/PNG_ICons/pigeon.png");
 export default function Home({ navigation }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [displayedSubcategories, setDisplayedSubcategories] = useState([]);
+
+  const [nomeUsuario, setNomeUsuario] = useState("");
+
+  const carregarNomeUsuario = async () => {
+    try {
+      const nomeSalvo = await AsyncStorage.getItem("@usuario_nome");
+      if (nomeSalvo !== null) {
+        setNomeUsuario(nomeSalvo);
+      } else {
+        setNomeUsuario("Visitante");
+      }
+    } catch (error) {
+      console.error("Erro ao carregar o nome:", error);
+    }
+  };
 
   const getIcon = (categoriaNome) => {
     switch (categoriaNome) {
@@ -77,11 +93,16 @@ export default function Home({ navigation }) {
   };
 
   useEffect(() => {
+    carregarNomeUsuario();
     handleCategoryPress("Pets");
   }, []);
 
   const renderSubcategoryItem = ({ item }) => (
-    <TouchableOpacity style={styles.subcategoryBox} onPress={() => navigation.navigate("animal", { subcategory: item })} activeOpacity={0.7}>
+    <TouchableOpacity
+      style={styles.subcategoryBox}
+      onPress={() => navigation.navigate("SubcategoriaListagem", { subcategory: item })} // Alterado aqui
+      activeOpacity={0.7}
+    >
       <View style={styles.subcategoryCircle}>
         <Image source={getImagensubcategoria(item.id.toString())} style={styles.subcategoryImage} resizeMode="contain" />
       </View>
@@ -107,7 +128,7 @@ export default function Home({ navigation }) {
 
           <View style={styles.userInfo}>
             <Text>
-              Olá <Text style={styles.span}>Gutemberg</Text>
+              Olá <Text style={styles.span}>{nomeUsuario || "Carregando..."}</Text>
             </Text>
             <Image style={styles.userImg} source={require("../../assets/userIMG/user.jpeg")} />
           </View>
@@ -147,11 +168,9 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
-    // backgroundColor: "#c6eadd",
   },
 
   headerContainer: {
-    // position: "relative",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     borderBottomLeftRadius: 30,
@@ -198,7 +217,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-   
   },
 
   span: {

@@ -4,54 +4,71 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function BemEstar({ route, navigation }) {
-  const { subcategory } = route.params || {};
+  const { animal, subcategory } = route.params || {};
   const [atividade, setAtividade] = useState("");
   const [obs, setObs] = useState("");
   const [listaBemEstar, setListaBemEstar] = useState([]);
 
-  const STORAGE_KEY = `@bemestar_${subcategory?.id || "ROTINA"}`;
+  const STORAGE_KEY = `@bemestar_animal_${animal?.id}`;
 
   useEffect(() => {
-    buscarDados();
-  }, []);
+    if (animal?.id) buscarDados();
+  }, [animal?.id]);
 
   async function buscarDados() {
-    const dados = await AsyncStorage.getItem(STORAGE_KEY);
-    setListaBemEstar(dados ? JSON.parse(dados) : []);
+    try {
+      const dados = await AsyncStorage.getItem(STORAGE_KEY);
+      setListaBemEstar(dados ? JSON.parse(dados) : []);
+    } catch (e) {
+      console.error("Erro ao carregar bem-estar", e);
+    }
   }
 
   async function salvar() {
-    if (!atividade || !obs) return Alert.alert("Erro", "Preencha a atividade e observação.");
+    if (!atividade.trim() || !obs.trim()) {
+      return Alert.alert("Erro", "Preencha a atividade e a observação.");
+    }
 
     const novaLista = [{ atividade, obs, id: Date.now().toString() }, ...listaBemEstar];
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(novaLista));
-    setAtividade("");
-    setObs("");
-    buscarDados();
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(novaLista));
+      setAtividade("");
+      setObs("");
+      buscarDados();
+      Alert.alert("Sucesso", "Rotina registrada!");
+    } catch (e) {
+      Alert.alert("Erro", "Não foi possível salvar os dados.");
+    }
   }
 
   return (
     <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialCommunityIcons name="arrow-left" size={28} color="#4a8f7a" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Bem-Estar: {subcategory?.nome}</Text>
+        <Text style={styles.headerTitle}>Bem-Estar: {animal?.nome}</Text>
         <View style={{ width: 28 }} />
       </View>
 
       <View style={styles.form}>
-        <TextInput placeholder="Atividade (ex: Passeio, Ração específica)" style={styles.input} value={atividade} onChangeText={setAtividade} />
-        <TextInput placeholder="Observações (ex: Comeu bem, correu 20min)" style={styles.input} value={obs} onChangeText={setObs} />
-        <TouchableOpacity style={[styles.btn, { backgroundColor: "#FF9800" }]} onPress={salvar}>
+        <TextInput placeholder="Atividade (ex: Passeio, Ração)" style={styles.input} value={atividade} onChangeText={setAtividade} />
+        <TextInput placeholder="Observações (ex: Comeu bem)" style={styles.input} value={obs} onChangeText={setObs} />
+        <TouchableOpacity style={styles.btn} onPress={salvar}>
           <Text style={styles.btnText}>REGISTRAR ROTINA</Text>
         </TouchableOpacity>
       </View>
 
+      <Text style={styles.subtitulo}>HISTÓRICO DE BEM-ESTAR:</Text>
+
+
       <FlatList
         data={listaBemEstar}
-        contentContainerStyle={{ padding: 20 }}
-        renderItem={({ item, index }) => (
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingBottom: 30 }}
+        renderItem={({ item }) => (
           <View style={styles.card}>
             <MaterialCommunityIcons name="heart-pulse" size={24} color="#FF9800" />
             <View style={{ flex: 1, marginLeft: 10 }}>
@@ -60,12 +77,14 @@ export default function BemEstar({ route, navigation }) {
             </View>
           </View>
         )}
+        ListEmptyComponent={<Text style={{ textAlign: "center", marginTop: 20, color: "#999" }}>Nenhum registro encontrado.</Text>}
       />
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFF9F2" }, // Fundo creme/laranja claro
+  container: { flex: 1, backgroundColor: "#FFF9F2" },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -74,21 +93,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
-  headerTitle: { fontSize: 22, fontWeight: "bold", color: "#E67E22" },
+  headerTitle: { fontSize: 20, fontWeight: "bold", color: "#E67E22" },
   form: {
     backgroundColor: "white",
     margin: 15,
     padding: 20,
-    borderRadius: 25,
-    borderWidth: 2,
-    borderColor: "#FFE0B2",
+    borderRadius: 20,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
   },
   input: {
     backgroundColor: "#FFFBF5",
     borderWidth: 1,
     borderColor: "#FFCC80",
     height: 48,
-    borderRadius: 15,
+    borderRadius: 12,
     paddingHorizontal: 15,
     marginBottom: 10,
     fontSize: 15,
@@ -96,28 +117,25 @@ const styles = StyleSheet.create({
   btn: {
     backgroundColor: "#FF9800",
     height: 50,
-    borderRadius: 15,
+    borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#FF9800",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
+    elevation: 2,
   },
-  btnText: { color: "white", fontWeight: "900", fontSize: 16, textTransform: "uppercase" },
+  btnText: { color: "white", fontWeight: "bold", fontSize: 16 },
+  subtitulo: { marginLeft: 20, fontWeight: "bold", color: "#E67E22", marginBottom: 10 },
   card: {
     backgroundColor: "white",
-    padding: 20,
-    borderRadius: 20,
+    padding: 15,
+    borderRadius: 15,
     marginHorizontal: 15,
-    marginBottom: 15,
+    marginBottom: 10,
     flexDirection: "row",
     alignItems: "center",
-    gap: 15,
-    borderBottomWidth: 4,
-    borderBottomColor: "#FFCC80",
+    elevation: 2,
+    borderLeftWidth: 5,
+    borderLeftColor: "#FF9800",
   },
-  cardNome: { fontSize: 18, fontWeight: "700", color: "#444" },
-  cardSub: { fontSize: 14, color: "#777", fontStyle: "italic" },
+  cardNome: { fontSize: 16, fontWeight: "bold", color: "#333" },
+  cardSub: { fontSize: 14, color: "#666", fontStyle: "italic" },
 });

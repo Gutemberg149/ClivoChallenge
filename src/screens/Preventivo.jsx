@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function Preventivo({ route, navigation }) {
-  const { subcategory } = route.params || {};
+  const { animal, subcategory } = route.params || {};
   const [nomeServico, setNomeServico] = useState("");
   const [descricaoServico, setDescricaoServico] = useState("");
   const [dataServico, setDataServico] = useState("");
@@ -12,20 +12,16 @@ export default function Preventivo({ route, navigation }) {
   const [servicoEditado, setServicoEditado] = useState(null);
 
 
-  const STORAGE_KEY = `@preventivo_${subcategory?.id || "SERVICOS"}`;
+  const STORAGE_KEY = `@preventivo_animal_${animal?.id}`;
 
   useEffect(() => {
-    buscarServicos();
-  }, []);
+    if (animal?.id) buscarServicos();
+  }, [animal?.id]);
 
   async function buscarServicos() {
     try {
       const dados = await AsyncStorage.getItem(STORAGE_KEY);
-      if (dados) {
-        setListaServicos(JSON.parse(dados));
-      } else {
-        setListaServicos([]);
-      }
+      setListaServicos(dados ? JSON.parse(dados) : []);
     } catch (e) {
       console.error("Erro ao buscar serviços", e);
     }
@@ -39,34 +35,24 @@ export default function Preventivo({ route, navigation }) {
 
     try {
       let servicos = [...listaServicos];
+      const novoDado = {
+        nome: nomeServico.trim(),
+        descricao: descricaoServico.trim(),
+        data: dataServico.trim(),
+      };
 
       if (servicoEditado !== null) {
-
-        servicos[servicoEditado.index] = {
-          nome: nomeServico.trim(),
-          descricao: descricaoServico.trim(),
-          data: dataServico.trim(),
-        };
+        servicos[servicoEditado.index] = novoDado;
       } else {
-        // Adiciona novo serviço
-        servicos.push({
-          nome: nomeServico.trim(),
-          descricao: descricaoServico.trim(),
-          data: dataServico.trim(),
-        });
+        servicos.push(novoDado);
       }
 
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(servicos));
-      Alert.alert("Sucesso", servicoEditado !== null ? "Serviço atualizado!" : "Serviço salvo!");
-
-      // Limpar formulário e atualizar lista
-      setNomeServico("");
-      setDescricaoServico("");
-      setDataServico("");
+      setNomeServico(""); setDescricaoServico(""); setDataServico("");
       setServicoEditado(null);
-      buscarServicos(); // Atualiza a lista automaticamente
+      buscarServicos();
     } catch (e) {
-      Alert.alert("Erro", "Não foi possível salvar os dados.");
+      Alert.alert("Erro", "Não foi possível salvar.");
     }
   }
 
@@ -95,7 +81,7 @@ export default function Preventivo({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Header com botão de voltar */}
+    
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialCommunityIcons name="arrow-left" size={28} color="#4a8f7a" />
