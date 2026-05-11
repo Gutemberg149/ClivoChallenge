@@ -1,9 +1,12 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert } from "react-native";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, SafeAreaView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "../../context/ThemeContext"; 
 
 export default function Terapeutico({ route, navigation }) {
+  const { colors, dark } = useTheme();
   const { animal, subcategory } = route.params || {};
   const [remedio, setRemedio] = useState("");
   const [dosagem, setDosagem] = useState("");
@@ -18,8 +21,12 @@ export default function Terapeutico({ route, navigation }) {
   }, [animal?.id]);
 
   async function buscarDados() {
-    const dados = await AsyncStorage.getItem(STORAGE_KEY);
-    setListaMedicamentos(dados ? JSON.parse(dados) : []);
+    try {
+      const dados = await AsyncStorage.getItem(STORAGE_KEY);
+      setListaMedicamentos(dados ? JSON.parse(dados) : []);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   async function salvar() {
@@ -29,7 +36,7 @@ export default function Terapeutico({ route, navigation }) {
     }
 
     let meds = [...listaMedicamentos];
-    const novoMed = { remedio, dosagem, horario };
+    const novoMed = { remedio, dosagem, horario, id: Date.now().toString() };
 
     if (editando !== null) {
       meds[editando.index] = novoMed;
@@ -37,116 +44,185 @@ export default function Terapeutico({ route, navigation }) {
       meds.push(novoMed);
     }
 
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(meds));
-    setRemedio(""); setDosagem(""); setHorario("");
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(meds));
+      limparCampos();
+      buscarDados();
+    } catch (e) {
+      Alert.alert("Erro", "Falha ao salvar.");
+    }
+  }
+
+  function limparCampos() {
+    setRemedio("");
+    setDosagem("");
+    setHorario("");
     setEditando(null);
-    buscarDados();
   }
 
   async function deletar(index) {
-    const novaLista = listaMedicamentos.filter((_, i) => i !== index);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(novaLista));
-    buscarDados();
+    Alert.alert("Excluir", "Deseja remover este medicamento?", [
+      { text: "Não", style: "cancel" },
+      {
+        text: "Sim",
+        style: "destructive",
+        onPress: async () => {
+          const novaLista = listaMedicamentos.filter((_, i) => i !== index);
+          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(novaLista));
+          buscarDados();
+        },
+      },
+    ]);
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={28} color="#4a8f7a" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Terapêutico: {subcategory?.nome}</Text>
-        <View style={{ width: 28 }} />
-      </View>
+    <LinearGradient colors={colors.background} style={styles.container}>
+      <SafeAreaView style={{ flex: 1 }}>
+        {/* Header Dinâmico */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: colors.iconBg }]}>
+            <MaterialCommunityIcons name="arrow-left" size={26} color={colors.text} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Terapêutico: {animal?.nome}</Text>
+          <View style={{ width: 42 }} />
+        </View>
 
-      <View style={styles.form}>
-        <TextInput placeholder="Nome do Medicamento" style={styles.input} value={remedio} onChangeText={setRemedio} />
-        <TextInput placeholder="Dosagem (ex: 5mg ou 2 gotas)" style={styles.input} value={dosagem} onChangeText={setDosagem} />
-        <TextInput placeholder="Horário (ex: 08:00 / 20:00)" style={styles.input} value={horario} onChangeText={setHorario} />
-        <TouchableOpacity style={[styles.btn, { backgroundColor: "#F44336" }]} onPress={salvar}>
-          <Text style={styles.btnText}>{editando ? "ATUALIZAR" : "SALVAR MEDICAMENTO"}</Text>
-        </TouchableOpacity>
-      </View>
+       
+        <View style={[styles.form, { backgroundColor: colors.card }]}>
+          <Text style={[styles.formLabel, { color: "#F44336" }]}>{editando ? "EDITAR MEDICAMENTO" : "ADICIONAR MEDICAMENTO"}</Text>
 
-      <FlatList
-        data={listaMedicamentos}
-        contentContainerStyle={{ padding: 20 }}
-        renderItem={({ item, index }) => (
-          <View style={styles.card}>
-            <MaterialCommunityIcons name="pill" size={24} color="#F44336" />
-            <View style={{ flex: 1, marginLeft: 10 }}>
-              <Text style={styles.cardNome}>{item.remedio}</Text>
-              <Text style={styles.cardSub}>
-                {item.dosagem} às {item.horario}
-              </Text>
+          <TextInput
+            placeholder="Nome do Medicamento"
+            placeholderTextColor={dark ? "#999" : "#666"}
+            style={[
+              styles.input,
+              {
+                backgroundColor: dark ? "#333" : "#FFF",
+                color: colors.text,
+                borderColor: dark ? "#444" : "#FEE2E2",
+              },
+            ]}
+            value={remedio}
+            onChangeText={setRemedio}
+          />
+          <TextInput
+            placeholder="Dosagem (ex: 5mg ou 2 gotas)"
+            placeholderTextColor={dark ? "#999" : "#666"}
+            style={[
+              styles.input,
+              {
+                backgroundColor: dark ? "#333" : "#FFF",
+                color: colors.text,
+                borderColor: dark ? "#444" : "#FEE2E2",
+              },
+            ]}
+            value={dosagem}
+            onChangeText={setDosagem}
+          />
+          <TextInput
+            placeholder="Horário (ex: 08:00 / 20:00)"
+            placeholderTextColor={dark ? "#999" : "#666"}
+            style={[
+              styles.input,
+              {
+                backgroundColor: dark ? "#333" : "#FFF",
+                color: colors.text,
+                borderColor: dark ? "#444" : "#FEE2E2",
+              },
+            ]}
+            value={horario}
+            onChangeText={setHorario}
+          />
+
+          <TouchableOpacity style={[styles.btn, { backgroundColor: "#F44336" }]} onPress={salvar}>
+            <MaterialCommunityIcons name="check-bold" size={20} color="white" />
+            <Text style={styles.btnText}>{editando ? "ATUALIZAR" : "SALVAR"}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <FlatList
+          data={listaMedicamentos}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30 }}
+          renderItem={({ item, index }) => (
+            <View style={[styles.card, { backgroundColor: colors.card }]}>
+              <View style={[styles.iconBox, { backgroundColor: dark ? "#3d1f1f" : "#ffebee" }]}>
+                <MaterialCommunityIcons name="pill" size={24} color="#F44336" />
+              </View>
+
+              <View style={{ flex: 1, marginLeft: 12 }}>
+                <Text style={[styles.cardNome, { color: colors.text }]}>{item.remedio}</Text>
+                <Text style={[styles.cardSub, { color: colors.subText }]}>
+                  {item.dosagem} • {item.horario}
+                </Text>
+              </View>
+
+              <TouchableOpacity onPress={() => deletar(index)} style={styles.deleteBtn}>
+                <MaterialCommunityIcons name="trash-can-outline" size={22} color={dark ? "#ff6b6b" : "#D32F2F"} />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => deletar(index)}>
-              <MaterialCommunityIcons name="delete" size={22} color="#ccc" />
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    </View>
+          )}
+          ListEmptyComponent={<Text style={[styles.emptyText, { color: colors.subText }]}>Nenhum medicamento registrado.</Text>}
+        />
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFF5F5" }, 
+  container: { flex: 1 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: 50,
-    paddingHorizontal: 20,
-    paddingBottom: 15,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#FFEBEB",
-  },
-  headerTitle: { fontSize: 18, fontWeight: "800", color: "#D32F2F", letterSpacing: 0.5 },
-  form: {
-    backgroundColor: "white",
-    margin: 15,
     padding: 20,
-    borderRadius: 20,
-    elevation: 8,
-    shadowColor: "#F44336",
+  },
+  backBtn: { padding: 8, borderRadius: 12 },
+  headerTitle: { fontSize: 18, fontWeight: "bold" },
+  form: {
+    margin: 20,
+    padding: 20,
+    borderRadius: 25,
+    elevation: 5,
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,
   },
+  formLabel: { fontSize: 13, fontWeight: "bold", marginBottom: 15, textAlign: "center", letterSpacing: 1 },
   input: {
     borderWidth: 1.5,
-    borderColor: "#FEE2E2",
     height: 50,
     borderRadius: 12,
     paddingHorizontal: 15,
     marginBottom: 12,
-    backgroundColor: "#FFF",
-    color: "#333",
+    fontSize: 15,
   },
   btn: {
-    backgroundColor: "#F44336",
-    height: 50,
+    height: 52,
     borderRadius: 12,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    gap: 8,
     marginTop: 5,
-    flexDirection: "row",
-    gap: 10,
   },
   btnText: { color: "white", fontWeight: "bold", fontSize: 16 },
   card: {
-    backgroundColor: "white",
     flexDirection: "row",
     alignItems: "center",
-    padding: 18,
-    borderRadius: 18,
-    marginHorizontal: 15,
+    padding: 16,
+    borderRadius: 20,
     marginBottom: 12,
     borderLeftWidth: 6,
     borderLeftColor: "#F44336",
     elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
   },
-  cardNome: { fontSize: 17, fontWeight: "bold", color: "#1a1a1a" },
-  cardSub: { fontSize: 14, color: "#666", marginTop: 2 },
+  iconBox: { width: 45, height: 45, borderRadius: 12, justifyContent: "center", alignItems: "center" },
+  cardNome: { fontSize: 17, fontWeight: "bold" },
+  cardSub: { fontSize: 14, marginTop: 2 },
+  deleteBtn: { padding: 5 },
+  emptyText: { textAlign: "center", marginTop: 40, fontSize: 15 },
 });

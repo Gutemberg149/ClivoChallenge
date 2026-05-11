@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
-import CardCuidado from "../components/CardCuidado"; // Importe o componente acima
+import CardCuidado from "../components/CardCuidado"; 
 
 export default function DetalhesSubcategoria({ route }) {
   // Pegando os dados passados pela sua Home
@@ -13,16 +13,15 @@ export default function DetalhesSubcategoria({ route }) {
       </View>
 
       <View style={styles.content}>
-        {/* PILAR 1: PREVENTIVO */}
+  
         <CardCuidado titulo="Plano Preventivo" subtexto="Vacinas, vermífugos e exames de rotina." icone="shield-check" cor="#4CAF50" onPress={() => {}} />
 
-        {/* PILAR 2: TERAPÊUTICO */}
         <CardCuidado titulo="Acompanhamento" subtexto="Controle de medicação e doenças crônicas." icone="pill" cor="#F44336" onPress={() => {}} />
 
-        {/* PILAR 3: BEM-ESTAR */}
+
         <CardCuidado titulo="Bem-estar e Nutrição" subtexto="Dieta ideal e comportamento por fase de vida." icone="heart" cor="#FF9800" onPress={() => {}} />
 
-        {/* PILAR 4: IA (Destaque) */}
+ 
         <View style={styles.aiBox}>
           <View style={styles.aiHeader}>
             <MaterialCommunityIcons name="robot" size={24} color="#fff" />

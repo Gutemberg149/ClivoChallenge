@@ -1,9 +1,12 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert } from "react-native";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, SafeAreaView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "../../context/ThemeContext"; 
 
 export default function BemEstar({ route, navigation }) {
+  const { colors, dark } = useTheme(); 
   const { animal, subcategory } = route.params || {};
   const [atividade, setAtividade] = useState("");
   const [obs, setObs] = useState("");
@@ -28,9 +31,7 @@ export default function BemEstar({ route, navigation }) {
     if (!atividade.trim() || !obs.trim()) {
       return Alert.alert("Erro", "Preencha a atividade e a observação.");
     }
-
     const novaLista = [{ atividade, obs, id: Date.now().toString() }, ...listaBemEstar];
-
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(novaLista));
       setAtividade("");
@@ -43,99 +44,135 @@ export default function BemEstar({ route, navigation }) {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialCommunityIcons name="arrow-left" size={28} color="#4a8f7a" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Bem-Estar: {animal?.nome}</Text>
-        <View style={{ width: 28 }} />
-      </View>
+    <LinearGradient colors={colors.background} style={styles.container}>
+      <SafeAreaView style={{ flex: 1 }}>
+      
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: colors.iconBg }]}>
+            <MaterialCommunityIcons name="arrow-left" size={26} color={colors.text} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Bem-Estar: {animal?.nome}</Text>
+          <View style={{ width: 42 }} />
+        </View>
 
-      <View style={styles.form}>
-        <TextInput placeholder="Atividade (ex: Passeio, Ração)" style={styles.input} value={atividade} onChangeText={setAtividade} />
-        <TextInput placeholder="Observações (ex: Comeu bem)" style={styles.input} value={obs} onChangeText={setObs} />
-        <TouchableOpacity style={styles.btn} onPress={salvar}>
-          <Text style={styles.btnText}>REGISTRAR ROTINA</Text>
-        </TouchableOpacity>
-      </View>
+       
+        <View style={[styles.form, { backgroundColor: colors.card }]}>
+          <TextInput
+            placeholder="Atividade (ex: Passeio, Ração)"
+            placeholderTextColor={dark ? "#999" : "#666"}
+            style={[
+              styles.input,
+              {
+                backgroundColor: dark ? "#333" : "#FFFBF5",
+                color: colors.text,
+                borderColor: dark ? "#444" : "#FFCC80",
+              },
+            ]}
+            value={atividade}
+            onChangeText={setAtividade}
+          />
+          <TextInput
+            placeholder="Observações (ex: Comeu bem)"
+            placeholderTextColor={dark ? "#999" : "#666"}
+            style={[
+              styles.input,
+              {
+                backgroundColor: dark ? "#333" : "#FFFBF5",
+                color: colors.text,
+                borderColor: dark ? "#444" : "#FFCC80",
+              },
+            ]}
+            value={obs}
+            onChangeText={setObs}
+          />
+          <TouchableOpacity style={styles.btn} onPress={salvar}>
+            <Text style={styles.btnText}>REGISTRAR ROTINA</Text>
+          </TouchableOpacity>
+        </View>
 
-      <Text style={styles.subtitulo}>HISTÓRICO DE BEM-ESTAR:</Text>
+        <Text style={[styles.subtitulo, { color: colors.text }]}>HISTÓRICO DE BEM-ESTAR:</Text>
 
-
-      <FlatList
-        data={listaBemEstar}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 30 }}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <MaterialCommunityIcons name="heart-pulse" size={24} color="#FF9800" />
-            <View style={{ flex: 1, marginLeft: 10 }}>
-              <Text style={styles.cardNome}>{item.atividade}</Text>
-              <Text style={styles.cardSub}>{item.obs}</Text>
+        <FlatList
+          data={listaBemEstar}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingBottom: 30, paddingHorizontal: 20 }}
+          renderItem={({ item }) => (
+            <View style={[styles.card, { backgroundColor: colors.card }]}>
+              <View style={[styles.iconCircle, { backgroundColor: dark ? "#3d2b1f" : "#FFF3E0" }]}>
+                <MaterialCommunityIcons name="heart-pulse" size={24} color="#FF9800" />
+              </View>
+              <View style={{ flex: 1, marginLeft: 12 }}>
+                <Text style={[styles.cardNome, { color: colors.text }]}>{item.atividade}</Text>
+                <Text style={[styles.cardSub, { color: colors.subText }]}>{item.obs}</Text>
+              </View>
             </View>
-          </View>
-        )}
-        ListEmptyComponent={<Text style={{ textAlign: "center", marginTop: 20, color: "#999" }}>Nenhum registro encontrado.</Text>}
-      />
-    </View>
+          )}
+          ListEmptyComponent={<Text style={[styles.emptyText, { color: colors.subText }]}>Nenhum registro encontrado.</Text>}
+        />
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFF9F2" },
+  container: { flex: 1 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: 50,
+    paddingTop: 20,
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
-  headerTitle: { fontSize: 20, fontWeight: "bold", color: "#E67E22" },
+  backBtn: {
+    padding: 8,
+    borderRadius: 12,
+  },
+  headerTitle: { fontSize: 18, fontWeight: "bold" },
   form: {
-    backgroundColor: "white",
-    margin: 15,
+    margin: 20,
     padding: 20,
-    borderRadius: 20,
+    borderRadius: 25,
     elevation: 4,
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowRadius: 5,
+    shadowRadius: 10,
   },
   input: {
-    backgroundColor: "#FFFBF5",
     borderWidth: 1,
-    borderColor: "#FFCC80",
-    height: 48,
-    borderRadius: 12,
+    height: 52,
+    borderRadius: 15,
     paddingHorizontal: 15,
-    marginBottom: 10,
+    marginBottom: 12,
     fontSize: 15,
   },
   btn: {
     backgroundColor: "#FF9800",
-    height: 50,
-    borderRadius: 12,
+    height: 52,
+    borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 2,
   },
   btnText: { color: "white", fontWeight: "bold", fontSize: 16 },
-  subtitulo: { marginLeft: 20, fontWeight: "bold", color: "#E67E22", marginBottom: 10 },
+  subtitulo: { marginLeft: 25, fontWeight: "bold", marginBottom: 15, fontSize: 14, opacity: 0.8 },
   card: {
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 15,
-    marginHorizontal: 15,
-    marginBottom: 10,
+    padding: 16,
+    borderRadius: 20,
+    marginBottom: 12,
     flexDirection: "row",
     alignItems: "center",
     elevation: 2,
-    borderLeftWidth: 5,
+    borderLeftWidth: 6,
     borderLeftColor: "#FF9800",
   },
-  cardNome: { fontSize: 16, fontWeight: "bold", color: "#333" },
-  cardSub: { fontSize: 14, color: "#666", fontStyle: "italic" },
+  iconCircle: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cardNome: { fontSize: 17, fontWeight: "bold" },
+  cardSub: { fontSize: 14, fontStyle: "italic", marginTop: 2 },
+  emptyText: { textAlign: "center", marginTop: 30, fontSize: 14 },
 });
