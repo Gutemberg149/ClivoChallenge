@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     elevation: 2,
     borderLeftWidth: 6,
-    borderLeftColor: "#4a8f7a", // Cor fixa do Preventivo ou use colors.primary
+    borderLeftColor: "#4a8f7a", 
   },
   itemHeader: { flexDirection: "row", alignItems: "center", gap: 12 },
   iconBox: { width: 45, height: 45, borderRadius: 12, justifyContent: "center", alignItems: "center" },

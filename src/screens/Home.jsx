@@ -31,7 +31,13 @@ export default function Home({ navigation }) {
   useEffect(() => {
     carregarNomeUsuario();
     handleCategoryPress("Pets");
-  }, []);
+
+    const unsubscribe = navigation.addListener("focus", () => {
+      carregarNomeUsuario();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const carregarNomeUsuario = async () => {
     try {
@@ -100,6 +106,7 @@ export default function Home({ navigation }) {
             <View style={styles.userInfo}>
               <View>
                 <Text style={[styles.welcomeText, { color: colors.subText }]}>Olá,</Text>
+
                 <Text style={[styles.userName, { color: colors.text }]}>{nomeUsuario}</Text>
               </View>
               <Image style={styles.userImg} source={require("../../assets/userIMG/user.jpeg")} />
@@ -152,12 +159,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
   },
-  headerTop: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
+  headerTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
   bannerTitle: { flexDirection: "row", alignItems: "center" },
   logo: { width: 40, height: 40, marginRight: 10 },
   bannerNome: { fontSize: 22, fontWeight: "800" },
@@ -166,40 +168,16 @@ const styles = StyleSheet.create({
   welcomeText: { fontSize: 16 },
   userName: { fontSize: 20, fontWeight: "bold" },
   userImg: { width: 50, height: 50, borderRadius: 25, borderWidth: 2, borderColor: "#4CAF50" },
-
   content: { paddingHorizontal: 20 },
   categoriesRow: { flexDirection: "row", justifyContent: "space-around", marginBottom: 25 },
   categoryItem: { alignItems: "center" },
-  circle: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 2,
-    marginBottom: 8,
-    elevation: 4,
-  },
+  circle: { width: 70, height: 70, borderRadius: 35, justifyContent: "center", alignItems: "center", borderWidth: 2, marginBottom: 8, elevation: 4 },
   imagem: { width: 35, height: 35 },
   categoriaNome: { fontSize: 12 },
-
   sectionTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 15, marginLeft: 5 },
   row: { justifyContent: "space-between" },
-  subcategoryBox: {
-    width: "48%",
-    borderRadius: 20,
-    padding: 15,
-    alignItems: "center",
-    marginBottom: 15,
-    elevation: 3,
-  },
-  subcategoryCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  subcategoryBox: { width: "48%", borderRadius: 20, padding: 15, alignItems: "center", marginBottom: 15, elevation: 3 },
+  subcategoryCircle: { width: 60, height: 60, borderRadius: 30, justifyContent: "center", alignItems: "center" },
   subcategoryImage: { width: 80, height: 80, position: "absolute", top: -10 },
   subcategoryNome: { marginTop: 45, fontSize: 16, fontWeight: "600" },
 });

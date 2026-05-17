@@ -30,28 +30,19 @@ O ecossistema MedVet utiliza tecnologias de ponta para garantir performance e es
 
 ---
 
-## 🚀 Como Executar o Projeto
 
-### Pré-requisitos
-*   Node.js instalado.
-*   Expo Go instalado no smartphone (para testes físicos).
+ **Repositório:**
+git clone https://github.com/Gutemberg149/ClivoChallenge
 
-### Passo a Passo
-1. **Clone o repositório:**
-   git clone https://github.com/Gutemberg149/ClivoChallenge
-
-2. Faça a instalação nppm install
-
-3. Digite npm start
-
-4. Digita a letra "a"
-
+ **Video:**
+ https://vimeo.com/1193015270?share=copy&fl=sv&fe=ci
+ 
 
 ## 👥 Equipe de Desenvolvimento
 
 Projeto desenvolvido pelos integrantes:
 
-*   👤 **Gutemberg Rocha**
+*   👤 **Gutemberg**
 *   👤 **Erik Naoki**
 *   👤 **Juliana**
 *   👤 **Gustavo**

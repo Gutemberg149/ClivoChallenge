@@ -3,10 +3,10 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, S
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTheme } from "../../context/ThemeContext"; 
+import { useTheme } from "../../context/ThemeContext";
 
 export default function BemEstar({ route, navigation }) {
-  const { colors, dark } = useTheme(); 
+  const { colors, dark } = useTheme();
   const { animal, subcategory } = route.params || {};
   const [atividade, setAtividade] = useState("");
   const [obs, setObs] = useState("");
@@ -43,10 +43,28 @@ export default function BemEstar({ route, navigation }) {
     }
   }
 
+  function confirmarExclusao(item) {
+    Alert.alert("Excluir Registro", `Deseja remover o registro de "${item.atividade}"?`, [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const novaLista = listaBemEstar.filter((i) => i.id !== item.id);
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(novaLista));
+            setListaBemEstar(novaLista);
+          } catch (e) {
+            Alert.alert("Erro", "Não foi possível excluir o registro.");
+          }
+        },
+      },
+    ]);
+  }
+
   return (
     <LinearGradient colors={colors.background} style={styles.container}>
       <SafeAreaView style={{ flex: 1 }}>
-      
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: colors.iconBg }]}>
             <MaterialCommunityIcons name="arrow-left" size={26} color={colors.text} />
@@ -55,7 +73,6 @@ export default function BemEstar({ route, navigation }) {
           <View style={{ width: 42 }} />
         </View>
 
-       
         <View style={[styles.form, { backgroundColor: colors.card }]}>
           <TextInput
             placeholder="Atividade (ex: Passeio, Ração)"
@@ -105,6 +122,10 @@ export default function BemEstar({ route, navigation }) {
                 <Text style={[styles.cardNome, { color: colors.text }]}>{item.atividade}</Text>
                 <Text style={[styles.cardSub, { color: colors.subText }]}>{item.obs}</Text>
               </View>
+
+              <TouchableOpacity style={{ padding: 8 }} onPress={() => confirmarExclusao(item)}>
+                <MaterialCommunityIcons name="trash-can-outline" size={22} color="#ff5252" />
+              </TouchableOpacity>
             </View>
           )}
           ListEmptyComponent={<Text style={[styles.emptyText, { color: colors.subText }]}>Nenhum registro encontrado.</Text>}

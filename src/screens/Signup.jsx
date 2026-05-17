@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -8,14 +8,12 @@ export default function Signup({ navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
-
   const isButtonDisabled = nome.trim() === "" || email.trim() === "" || senha.trim() === "";
 
   const handleSignup = async () => {
     try {
 
-      await AsyncStorage.setItem("@usuario_nome", nome);
-
+      await AsyncStorage.setItem("@usuario_nome", nome.trim());
 
       navigation.reset({
         index: 0,
@@ -29,13 +27,6 @@ export default function Signup({ navigation }) {
   return (
     <LinearGradient colors={["#96e6a1", "#192f6a"]} style={styles.container}>
       <View style={styles.card}>
-        <TouchableOpacity
-          style={[styles.button, isButtonDisabled && styles.buttonDisabled]}
-          onPress={handleSignup} 
-          disabled={isButtonDisabled}
-        >
-          <Text style={styles.buttonText}>FINALIZAR CADASTRO</Text>
-        </TouchableOpacity>
 
         <Text style={styles.title}>Criar Conta</Text>
 
@@ -45,18 +36,13 @@ export default function Signup({ navigation }) {
 
         <TextInput placeholder="Senha" style={styles.input} value={senha} onChangeText={setSenha} secureTextEntry />
 
-        <TouchableOpacity
-          style={[styles.button, isButtonDisabled && styles.buttonDisabled]}
-          onPress={() => navigation.navigate("home")}
-          disabled={isButtonDisabled}
-        >
+        <TouchableOpacity style={[styles.button, isButtonDisabled && styles.buttonDisabled]} onPress={handleSignup} disabled={isButtonDisabled}>
           <Text style={styles.buttonText}>FINALIZAR CADASTRO</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", alignItems: "center" },
@@ -68,7 +54,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 10,
   },
-  backBtn: { alignSelf: "flex-start", marginBottom: 10 },
   title: { fontSize: 22, fontWeight: "bold", color: "#4a8f7a", marginBottom: 30 },
   input: {
     width: "100%",

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert, S
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTheme } from "../../context/ThemeContext"; 
+import { useTheme } from "../../context/ThemeContext";
 
 export default function SubcategoriaListagem({ route, navigation }) {
   const { colors, dark } = useTheme();
@@ -55,10 +55,36 @@ export default function SubcategoriaListagem({ route, navigation }) {
     }
   }
 
+
+  function confirmarExclusao(animal) {
+    Alert.alert("Excluir Animal", `Tem certeza que deseja remover ${animal.nome} da lista?`, [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => deletarAnimal(animal.id),
+      },
+    ]);
+  }
+
+  async function deletarAnimal(id) {
+    try {
+ 
+      const listaFiltrada = animais.filter((animal) => animal.id !== id);
+
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(listaFiltrada));
+
+      setAnimais(listaFiltrada);
+    } catch (e) {
+      Alert.alert("Erro", "Não foi possível deletar o animal.");
+    }
+  }
+  // ---------------------------------------------------
+
   return (
     <LinearGradient colors={colors.background} style={styles.container}>
       <SafeAreaView style={{ flex: 1 }}>
-        {/* Header Dinâmico */}
+
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backBtn, { backgroundColor: colors.iconBg }]}>
             <MaterialCommunityIcons name="arrow-left" size={26} color={colors.text} />
@@ -67,7 +93,6 @@ export default function SubcategoriaListagem({ route, navigation }) {
           <View style={{ width: 42 }} />
         </View>
 
-      
         <View style={[styles.form, { backgroundColor: colors.card }]}>
           <Text style={[styles.formTitle, { color: colors.primary }]}>CADASTRAR NOVO</Text>
 
@@ -135,6 +160,7 @@ export default function SubcategoriaListagem({ route, navigation }) {
             <TouchableOpacity
               style={[styles.animalCard, { backgroundColor: colors.card }]}
               onPress={() => navigation.navigate("animal", { animal: item, subcategory })}
+              onLongPress={() => confirmarExclusao(item)}
             >
               <View style={[styles.iconCircle, { backgroundColor: dark ? "#1b2e26" : "#e8f5f0" }]}>
                 <MaterialCommunityIcons name="paw" size={26} color={colors.primary} />
@@ -146,6 +172,10 @@ export default function SubcategoriaListagem({ route, navigation }) {
                   {item.raca} • {item.idade} {parseInt(item.idade) === 1 ? "ano" : "anos"}
                 </Text>
               </View>
+
+              <TouchableOpacity style={styles.deleteBtn} onPress={() => confirmarExclusao(item)}>
+                <MaterialCommunityIcons name="trash-can-outline" size={22} color="#ff5252" />
+              </TouchableOpacity>
 
               <MaterialCommunityIcons name="chevron-right" size={24} color={colors.subText} />
             </TouchableOpacity>
@@ -214,5 +244,9 @@ const styles = StyleSheet.create({
   },
   animalNome: { fontSize: 18, fontWeight: "bold" },
   animalInfo: { fontSize: 14, marginTop: 2 },
+  deleteBtn: {
+    padding: 8,
+    marginRight: 4,
+  },
   empty: { textAlign: "center", marginTop: 40, fontSize: 15 },
 });

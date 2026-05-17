@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import CardCuidado from "../components/CardCuidado"; 
 
 export default function DetalhesSubcategoria({ route }) {
-  // Pegando os dados passados pela sua Home
+
   const { subcategory } = route.params;
 
   return (
